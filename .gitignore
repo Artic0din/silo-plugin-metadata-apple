@@ -1,0 +1,11 @@
+/dist/
+/silo-plugin-metadata-apple
+/go.work
+/go.work.sum
+/.omc/
+.DS_Store
+.env
+.env.*
+!.env.example
+*.pem
+*.key
