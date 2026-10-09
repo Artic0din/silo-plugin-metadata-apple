@@ -12,3 +12,4 @@ All notable changes are documented here, following Keep a Changelog.
 ### Fixed
 
 - Fixed Apple artwork previews rejecting the paths Silo passes to image resolvers.
+- Fixed title matching stopping at unavailable Apple search results.

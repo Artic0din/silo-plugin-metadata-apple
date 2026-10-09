@@ -259,3 +259,41 @@ func TestIdentificationFallsBackWhenRegionalSearchHasNoMatch(t *testing.T) {
 		t.Fatalf("id=%q storefronts=%v err=%v", id, searched, err)
 	}
 }
+
+func TestSearchSkipsUnavailableCandidates(t *testing.T) {
+	for _, test := range []struct {
+		name   string
+		valid  bool
+		status int
+		want   string
+		code   codes.Code
+	}{
+		{"all unavailable", false, http.StatusNotFound, "", codes.OK},
+		{"valid alongside unavailable", true, http.StatusNotFound, "umc.cmc.valid", codes.OK},
+		{"upstream failure", false, http.StatusInternalServerError, "", codes.Unavailable},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			client := fakeClient(t, func(w http.ResponseWriter, r *http.Request) {
+				switch r.URL.Path {
+				case "/uts/v3/configurations":
+					configuration(w, r)
+				case "/uts/v3/search":
+					items := []appleContent{{ID: "umc.cmc.stale", Type: "Movie", Title: "Classic"}}
+					if test.valid {
+						items = append(items, appleContent{ID: "umc.cmc.valid", Type: "Movie", Title: "Classic"})
+					}
+					writeJSON(t, w, map[string]interface{}{"data": map[string]interface{}{"canvas": map[string]interface{}{"shelves": []interface{}{map[string]interface{}{"items": items}}}}})
+				case "/uts/v3/movies/umc.cmc.valid":
+					fmt.Fprint(w, `{"data":{"content":{"id":"umc.cmc.valid","type":"Movie","title":"Classic","releaseDate":0}}}`)
+				default:
+					w.WriteHeader(test.status)
+				}
+			})
+			au, _ := countryStorefront("au")
+			id, err := client.search(context.Background(), "Classic", "movie", map[int]bool{1970: true}, au)
+			if id != test.want || status.Code(err) != test.code {
+				t.Fatalf("id=%q err=%v", id, err)
+			}
+		})
+	}
+}

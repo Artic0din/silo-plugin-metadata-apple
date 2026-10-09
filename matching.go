@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -48,6 +49,9 @@ func (c *appleClient) search(ctx context.Context, title, kind string, years map[
 	match := ""
 	for id := range candidates {
 		detail, err := c.detail(ctx, id, kind, region)
+		if errors.Is(err, errNoTitle) {
+			continue
+		}
 		if err != nil {
 			return "", err
 		}

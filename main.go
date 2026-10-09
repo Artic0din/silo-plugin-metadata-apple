@@ -47,6 +47,7 @@ func (s *artworkServer) configure(_ context.Context, entries []*pluginv1.ConfigE
 	if _, ok := countryStorefront(country); !ok {
 		return invalidArgument("English artwork country must be a country code from the storefront registry.")
 	}
+	// Silo configures before capability calls and restarts on settings changes.
 	s.englishCountry = country
 	return nil
 }

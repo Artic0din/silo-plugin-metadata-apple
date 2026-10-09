@@ -5,7 +5,9 @@ The catalogue includes Apple TV+ and titles from other services, such as HBO Max
 
 ## Status
 
-The initial artwork provider is under development and has not been released or validated in a running Silo picker.
+The initial artwork provider is under development and has not been released.
+Live Silo API testing verified movie, series and season choices, preview downloads and saved artwork persistence.
+Visible picker controls and the Textless filter still need browser validation.
 [#1](https://github.com/Artic0din/silo-plugin-metadata-apple/issues/1) tracks the artwork provider.
 Titles, descriptions, cast and other Apple metadata remain a future enhancement under [#2](https://github.com/Artic0din/silo-plugin-metadata-apple/issues/2).
 
