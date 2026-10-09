@@ -193,6 +193,10 @@ func imagePath(template string, width, height int32, format string) (string, err
 }
 
 func resolveImage(path, variant string) (string, error) {
+	// Silo strips the registered scheme before image resolver RPCs.
+	if strings.HasPrefix(path, "image?") {
+		path = "appleart://" + path
+	}
 	u, err := url.Parse(path)
 	if err != nil || u.Scheme != "appleart" || u.Host != "image" || u.User != nil || u.Path != "" || u.Fragment != "" {
 		return "", invalidArgument("Invalid Apple artwork path.")

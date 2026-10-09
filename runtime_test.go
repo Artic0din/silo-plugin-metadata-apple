@@ -4,6 +4,7 @@ import (
 	"context"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -62,5 +63,14 @@ func TestBinarySDKHandshakeAndRPCs(t *testing.T) {
 	}
 	if resolved.Url != "https://is1-ssl.mzstatic.com/image/thumb/test/400x600nr.jpg" {
 		t.Fatalf("unexpected URL: %s", resolved.Url)
+	}
+	barePath := strings.TrimPrefix(path, "appleart://")
+	resolved, err = client.ImageResolver().ResolveImageURL(ctx, &pluginv1.ResolveImageURLRequest{Path: barePath, Variant: "card"})
+	if err != nil || resolved.GetUrl() != "https://is1-ssl.mzstatic.com/image/thumb/test/400x600nr.jpg" {
+		t.Fatalf("Silo host strips the scheme before single resolution: %v %v", resolved, err)
+	}
+	batch, err := client.ImageResolver().ResolveImageURLs(ctx, &pluginv1.ResolveImageURLsRequest{Paths: []string{barePath}, Variant: "card"})
+	if err != nil || batch.GetUrls()[barePath] != "https://is1-ssl.mzstatic.com/image/thumb/test/400x600nr.jpg" {
+		t.Fatalf("Silo host expects bare paths as batch response keys: %v %v", batch, err)
 	}
 }
