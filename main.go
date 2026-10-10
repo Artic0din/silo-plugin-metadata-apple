@@ -45,8 +45,8 @@ func (s *artworkServer) configure(_ context.Context, entries []*pluginv1.ConfigE
 			country = strings.ToLower(strings.TrimSpace(config.Country))
 		}
 	}
-	if _, ok := countryStorefront(country); !ok {
-		return invalidArgument("English artwork country must be a country code from the storefront registry.")
+	if region, ok := countryStorefront(country); !ok || imageLanguage(region) != "en" {
+		return invalidArgument("English artwork country must use an English storefront locale.")
 	}
 	// Silo configures before capability calls and restarts on settings changes.
 	s.englishCountry = country

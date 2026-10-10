@@ -63,7 +63,9 @@ func (c *appleClient) get(ctx context.Context, endpoint string, params url.Value
 	}
 	switch response.StatusCode {
 	case http.StatusNotFound:
-		return errNoTitle
+		if strings.HasPrefix(endpoint, c.appleURL+"/movies/") || strings.HasPrefix(endpoint, c.appleURL+"/shows/") || strings.HasPrefix(endpoint, c.appleURL+"/seasons/") {
+			return errNoTitle
+		}
 	case http.StatusTooManyRequests:
 		return status.Error(codes.ResourceExhausted, "Catalogue request was rate limited.")
 	case http.StatusBadRequest:

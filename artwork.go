@@ -168,11 +168,11 @@ func imageDimensions(image appleImage, kind string) (int32, int32, error) {
 	if kind == "logo" {
 		return image.Width, image.Height, nil
 	}
-	unitW, unitH, maxUnits := int32(2), int32(3), int32(1000)
+	unitW, unitH := int32(2), int32(3)
 	if kind == "backdrop" {
-		unitW, unitH, maxUnits = 16, 9, 240
+		unitW, unitH = 16, 9
 	}
-	units := min(image.Width/unitW, image.Height/unitH, maxUnits)
+	units := min(image.Width/unitW, image.Height/unitH)
 	if units == 0 {
 		return 0, 0, invalidData("Apple image is too small for the picker aspect ratio.")
 	}

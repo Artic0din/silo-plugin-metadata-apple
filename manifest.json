@@ -24,6 +24,6 @@
  "global_config_schema": [{
   "key":"artwork","title":"Apple artwork region","required":false,
   "json_schema":"{\"type\":\"object\",\"properties\":{\"english_country\":{\"type\":\"string\",\"default\":\"au\",\"pattern\":\"^[A-Za-z]{2}$\"}},\"additionalProperties\":false}",
-  "admin_form":{"fields":[{"key":"english_country","label":"English artwork country","description":"Two-letter country code, such as au, us or gb. Defaults to Australia.","control":"ADMIN_FORM_CONTROL_TEXT"}],"submit_label":"Save region"}
+  "admin_form":{"fields":[{"key":"english_country","label":"English artwork country","description":"Country code with an English storefront locale, such as au, us or gb. Defaults to Australia.","control":"ADMIN_FORM_CONTROL_TEXT"}],"submit_label":"Save region"}
  }]
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"image"
 	_ "image/jpeg"
 	_ "image/png"
@@ -109,13 +110,22 @@ func TestLiveArtwork(t *testing.T) {
 	}
 }
 
+const maxLiveImageBytes = 4 * 1024 * 1024
+
 func readLiveArtwork(reader io.Reader) ([]byte, image.Config, string, error) {
-	body, err := io.ReadAll(io.LimitReader(reader, 4*1024*1024))
+	body, err := io.ReadAll(io.LimitReader(reader, maxLiveImageBytes+1))
 	if err != nil {
 		return nil, image.Config{}, "", err
 	}
-	config, format, err := image.DecodeConfig(bytes.NewReader(body))
-	return body, config, format, err
+	if len(body) > maxLiveImageBytes {
+		return nil, image.Config{}, "", fmt.Errorf("image exceeds the %d-byte limit", maxLiveImageBytes)
+	}
+	decoded, format, err := image.Decode(bytes.NewReader(body))
+	if err != nil {
+		return nil, image.Config{}, "", err
+	}
+	config := image.Config{ColorModel: decoded.ColorModel(), Width: decoded.Bounds().Dx(), Height: decoded.Bounds().Dy()}
+	return body, config, format, nil
 }
 
 func abs(value int) int {

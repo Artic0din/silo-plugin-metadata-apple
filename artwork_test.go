@@ -66,7 +66,7 @@ func TestImageMappingAndResolution(t *testing.T) {
 		if i == 1 && !strings.HasSuffix(full, "1680x2520nr.jpg") {
 			t.Fatalf("tall crop changed: %s", full)
 		}
-		if i == 3 && !strings.HasSuffix(full, "3840x2160BDW.TVAESM02.jpg") {
+		if i == 3 && !strings.HasSuffix(full, "4320x2430BDW.TVAESM02.jpg") {
 			t.Fatalf("wide crop changed: %s", full)
 		}
 		if record.Kind == "logo" && !strings.HasSuffix(full, ".png") {
