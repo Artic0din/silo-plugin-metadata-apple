@@ -113,10 +113,18 @@ func (c *appleClient) identify(ctx context.Context, tmdbID, kind string, region 
 	if entity == "" || title == "" || len(years) == 0 {
 		return "", nil
 	}
-	id, err := c.search(ctx, title, kind, years, region)
-	if err != nil || id != "" || region.Country == "us" {
-		return id, err
+	for _, candidate := range languageStorefronts(region) {
+		id, err := c.search(ctx, title, kind, years, candidate)
+		if unavailableTitle(err) {
+			continue
+		}
+		if err != nil || id != "" {
+			return id, err
+		}
 	}
 	baseline, _ := countryStorefront("us")
+	if imageLanguage(region) == imageLanguage(baseline) {
+		return "", nil
+	}
 	return c.search(ctx, title, kind, years, baseline)
 }

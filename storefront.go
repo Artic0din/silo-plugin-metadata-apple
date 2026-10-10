@@ -39,7 +39,7 @@ func languageStorefront(language, englishCountry string) (storefront, error) {
 	if language == "" {
 		language = "en"
 	}
-	country := map[string]string{"en": englishCountry, "es": "mx", "de": "de", "pt": "br", "yue": "hk"}[language]
+	country := map[string]string{"en": englishCountry, "es": "mx", "de": "de", "fr": "fr", "pt": "br", "yue": "hk"}[language]
 	if country != "" {
 		region, _ := countryStorefront(country)
 		return region, nil
@@ -54,4 +54,17 @@ func languageStorefront(language, englishCountry string) (storefront, error) {
 
 func imageLanguage(region storefront) string {
 	return strings.ToLower(strings.Split(region.Locale, "-")[0])
+}
+
+func languageStorefronts(preferred storefront) []storefront {
+	regions := []storefront{preferred}
+	if baseline, ok := countryStorefront("us"); ok && baseline.ID != preferred.ID && imageLanguage(baseline) == imageLanguage(preferred) {
+		regions = append(regions, baseline)
+	}
+	for _, region := range storefronts {
+		if region.ID != preferred.ID && region.Country != "us" && imageLanguage(region) == imageLanguage(preferred) {
+			regions = append(regions, region)
+		}
+	}
+	return regions
 }

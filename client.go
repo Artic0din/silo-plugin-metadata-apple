@@ -72,8 +72,11 @@ func (c *appleClient) get(ctx context.Context, endpoint string, params url.Value
 		var failure struct {
 			Message string `json:"message"`
 		}
-		if strings.HasSuffix(endpoint, "/configurations") && json.Unmarshal(body, &failure) == nil && strings.HasSuffix(failure.Message, " is not a supported storefront") {
-			return errStorefront
+		if strings.HasSuffix(endpoint, "/configurations") {
+			_ = json.Unmarshal(body, &failure)
+			if strings.TrimSpace(string(body)) == "400:Invalid request" || strings.HasSuffix(failure.Message, " is not a supported storefront") || failure.Message == "Feature enabler CountryExpansion2026 is not enabled" {
+				return errStorefront
+			}
 		}
 	}
 	if response.StatusCode != http.StatusOK {

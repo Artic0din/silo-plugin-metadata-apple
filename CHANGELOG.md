@@ -11,6 +11,7 @@ All notable changes are documented here, following Keep a Changelog.
 
 ### Fixed
 
+- Combined artwork from all available storefronts in the requested language and removed repeated choices.
 - Fixed Apple artwork previews rejecting the paths Silo passes to image resolvers.
 - Fixed title matching stopping at unavailable Apple search results.
 - Fixed the connection test reporting success when Wikidata is unavailable.
