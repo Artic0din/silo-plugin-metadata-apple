@@ -13,3 +13,5 @@ All notable changes are documented here, following Keep a Changelog.
 
 - Fixed Apple artwork previews rejecting the paths Silo passes to image resolvers.
 - Fixed title matching stopping at unavailable Apple search results.
+- Fixed the connection test reporting success when Wikidata is unavailable.
+- Fixed exact-season summary artwork disappearing when season metadata returns 404.

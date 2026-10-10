@@ -203,7 +203,7 @@ func (c *appleClient) season(ctx context.Context, detail appleDetail, number int
 	var response struct{ Data appleSeason }
 	if err := c.appleGet(ctx, "/seasons/"+selected.ID+"/metadata", region, &response); err != nil {
 		if errors.Is(err, errNoTitle) {
-			return nil, nil
+			return selected.Images, nil
 		}
 		return nil, err
 	}

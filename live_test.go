@@ -16,6 +16,18 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+func TestLiveConnection(t *testing.T) {
+	if os.Getenv("APPLE_LIVE_TEST") != "1" {
+		t.Skip("Set APPLE_LIVE_TEST=1 to query public Apple and Wikidata services.")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
+	defer cancel()
+	server := &artworkServer{client: newClient(), englishCountry: "au"}
+	if _, err := server.Search(ctx, &pluginv1.SearchMetadataRequest{}); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestLiveArtwork(t *testing.T) {
 	if os.Getenv("APPLE_LIVE_TEST") != "1" {
 		t.Skip("Set APPLE_LIVE_TEST=1 to query public Apple and Wikidata services.")

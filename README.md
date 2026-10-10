@@ -7,7 +7,8 @@ The catalogue includes Apple TV+ and titles from other services, such as HBO Max
 
 The initial artwork provider is under development and has not been released.
 Live Silo API testing verified movie, series and season choices, preview downloads and saved artwork persistence.
-Visible picker controls and the Textless filter still need browser validation.
+Browser testing verified Severance's poster, backdrop and logo choices and the Textless filter.
+Saving was tested through the API; the browser test did not apply artwork.
 [#1](https://github.com/Artic0din/silo-plugin-metadata-apple/issues/1) tracks the artwork provider.
 Titles, descriptions, cast and other Apple metadata remain a future enhancement under [#2](https://github.com/Artic0din/silo-plugin-metadata-apple/issues/2).
 
@@ -32,6 +33,7 @@ The binary embeds its manifest and uses the published Silo SDK without a local d
 3. Open a TMDB-matched title's **Edit Metadata > Images** and select an Apple image.
 
 No Apple account or API key is required.
+The connection test checks Apple configuration and Wikidata's TMDB mappings.
 The plugin does not identify titles or select images during metadata refresh.
 Wikidata supplies the TMDB-to-Apple ID bridge; when its Apple ID is missing, the plugin searches Apple using Wikidata's English title and release or premiere year.
 Only an exact type, title and year match is accepted, and ambiguous matches fail visibly.
@@ -48,6 +50,7 @@ Episodes, headshots and watch-provider metadata are excluded.
 Posters are requested at 2:3 and backdrops at 16:9, preserving the crop suffix in each Apple URL template.
 Logos retain their source proportions and use PNG.
 Season choices contain only exact-season posters; square or show-level reused tall images are excluded.
+If season metadata returns 404, validated exact-season images from the show response remain available.
 Specials are returned only when Apple identifies season zero.
 
 Apple does not guarantee an image is textless.

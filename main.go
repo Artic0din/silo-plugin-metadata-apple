@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"encoding/json"
+	"net/url"
 	"strings"
 
 	pluginv1 "github.com/Silo-Server/silo-plugin-sdk/pkg/pluginproto/silo/plugin/v1"
@@ -60,6 +61,15 @@ func (s *artworkServer) Search(ctx context.Context, _ *pluginv1.SearchMetadataRe
 	// Silo calls Search to test the connection; artwork must not identify or refresh titles.
 	if _, err := s.client.params(ctx, region); err != nil {
 		return nil, err
+	}
+	var response struct {
+		Boolean *bool `json:"boolean"`
+	}
+	if err := s.client.get(ctx, s.client.wikidataURL, url.Values{"query": {"ASK { ?item wdt:P4947 ?id }"}, "format": {"json"}}, &response); err != nil {
+		return nil, err
+	}
+	if response.Boolean == nil || !*response.Boolean {
+		return nil, invalidData("Wikidata returned no TMDB mappings.")
 	}
 	return &pluginv1.SearchMetadataResponse{}, nil
 }
