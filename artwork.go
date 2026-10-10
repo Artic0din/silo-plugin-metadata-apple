@@ -40,58 +40,35 @@ func (s *artworkServer) GetImages(ctx context.Context, req *pluginv1.GetImagesRe
 		return nil, err
 	}
 	id, err := s.client.identify(ctx, tmdbID, kind, requested)
-	if errors.Is(err, errStorefront) {
-		requested, _ = countryStorefront("us")
-		id, err = s.client.identify(ctx, tmdbID, kind, requested)
-	}
 	if err != nil {
 		return nil, err
 	}
 	if id == "" {
 		return empty, nil
 	}
-	detail, err := s.client.detail(ctx, id, kind, requested)
-	if unavailableTitle(err) {
-		requested, _ = countryStorefront("us")
-		detail, err = s.client.detail(ctx, id, kind, requested)
-	}
-	if errors.Is(err, errNoTitle) {
-		return empty, nil
-	}
-	if err != nil {
-		return nil, err
-	}
+	return s.client.combinedImages(ctx, id, kind, requested, req.SeasonNumber)
+}
+
+func storefrontImages(artwork storefrontArtwork, requested storefront, season *int32, load func(storefront) (storefrontArtwork, error)) (*pluginv1.GetImagesResponse, error) {
+	var err error
+	detail := artwork.detail
 	home := requested
 	if len(detail.Content.Countries) > 0 {
 		if region, ok := countryStorefront(detail.Content.Countries[0].Code); ok {
 			home = region
 		}
 	}
-	homeDetail := detail
+	homeArtwork := artwork
 	if home.ID != requested.ID {
-		homeDetail, err = s.client.detail(ctx, id, kind, home)
+		homeArtwork, err = load(home)
 		if unavailableTitle(err) {
-			home, homeDetail, err = requested, detail, nil
+			home, homeArtwork, err = requested, artwork, nil
 		}
 		if err != nil {
 			return nil, err
 		}
 	}
-	images, homeImages := detail.Content.Images, homeDetail.Content.Images
-	if req.SeasonNumber != nil {
-		images, err = s.client.season(ctx, detail, req.GetSeasonNumber(), requested)
-		if err != nil {
-			return nil, err
-		}
-		homeImages = images
-		if requested.ID != home.ID {
-			homeImages, err = s.client.season(ctx, homeDetail, req.GetSeasonNumber(), home)
-			if err != nil {
-				return nil, err
-			}
-		}
-	}
-	return mapImages(images, homeImages, detail.Content.Images, requested, home, req.SeasonNumber)
+	return mapImages(artwork.images, homeArtwork.images, detail.Content.Images, requested, home, season)
 }
 
 type imageField struct {

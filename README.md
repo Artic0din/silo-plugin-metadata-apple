@@ -63,9 +63,12 @@ Review the preview before applying artwork; inferred classifications and Apple c
 Text images are tagged by storefront language.
 If the requested and home storefronts return the identical URL, the home storefront's language is used.
 This is an inference, especially for multilingual countries; `originalSpokenLanguages` is not used because it can describe a dubbed version.
-Shared-language defaults are English to the configured country, Spanish to Mexico, German to Germany, Portuguese to Brazil and Cantonese to Hong Kong.
-Other languages use the matching storefront in the checked-in registry.
-An explicitly unsupported storefront or unavailable title falls back to the US storefront to discover the title's home country; an unavailable home storefront retains that baseline.
+Artwork combines every available storefront with the requested language in the checked-in registry.
+The configured English country controls which storefront's choices appear first; Spanish starts with Mexico, German with Germany, French with France, Portuguese with Brazil and Cantonese with Hong Kong.
+Repeated assets with the same crop, dimensions, format and classification appear once, even when Apple uses different CDN nodes.
+Unsupported storefronts and unavailable titles are skipped; other upstream errors are reported.
+When Wikidata has no Apple ID, title discovery searches matching-language storefronts before using the US baseline for other languages.
+An unavailable home storefront retains the requested storefront's language inference.
 Other upstream errors are not suppressed.
 
 The storefront registry and API field knowledge come from the existing [media-asset-tool](https://github.com/Artic0din/media-asset-tool) project.

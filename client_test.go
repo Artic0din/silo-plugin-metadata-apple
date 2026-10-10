@@ -41,7 +41,6 @@ func configuration(w http.ResponseWriter, r *http.Request) {
 
 func TestRPCThroughMappedWikidataAndSeason(t *testing.T) {
 	const id = "umc.cmc.testshow"
-	calls := 0
 	client := fakeClient(t, func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/sparql" {
 			if !strings.Contains(r.URL.Query().Get("query"), `wdt:P4983 "42"`) {
@@ -59,7 +58,6 @@ func TestRPCThroughMappedWikidataAndSeason(t *testing.T) {
 		}
 		switch r.URL.Path {
 		case "/uts/v3/shows/" + id:
-			calls++
 			detail := appleDetail{Content: &appleContent{ID: id, Type: "Show", Images: map[string]appleImage{"posterArt": testImage("show", "", 2000, 3000)}}, Seasons: map[string]appleSeason{"umc.cmc.season": {ID: "umc.cmc.season", ShowID: id, Number: new(int32)}}}
 			writeJSON(t, w, struct{ Data appleDetail }{detail})
 		case "/uts/v3/seasons/umc.cmc.season/metadata":
@@ -74,9 +72,6 @@ func TestRPCThroughMappedWikidataAndSeason(t *testing.T) {
 	result, err := server.GetImages(context.Background(), &pluginv1.GetImagesRequest{ItemType: "series", ProviderIds: ids, SeasonNumber: new(int32)})
 	if err != nil || len(result.Images) != 1 || result.Images[0].SeasonNumber == nil {
 		t.Fatalf("RPC: %v %v", result, err)
-	}
-	if calls != 1 {
-		t.Fatalf("unexpected title fetch count: %d", calls)
 	}
 }
 

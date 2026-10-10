@@ -63,7 +63,7 @@ func TestLiveArtwork(t *testing.T) {
 				t.Fatal("No live artwork returned for the acceptance title.")
 			}
 			t.Logf("%d images", len(result.Images))
-			for _, record := range result.Images {
+			for index, record := range result.Images {
 				if test.season != nil && (record.Kind != "poster" || record.SeasonNumber == nil || *record.SeasonNumber != *test.season) {
 					t.Fatal("season scope lost")
 				}
@@ -75,6 +75,8 @@ func TestLiveArtwork(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
+				// Match the browser user agent used by Silo's Apple CDN downloader.
+				request.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.0 Safari/605.1.15")
 				response, err := server.client.http.Do(request)
 				if err != nil {
 					t.Fatal(err)
@@ -90,7 +92,7 @@ func TestLiveArtwork(t *testing.T) {
 					t.Fatal(err)
 				}
 				name := record.Metadata.Fields["apple_field"].GetStringValue()
-				file := filepath.Join(directory, test.name+"-"+name+".image")
+				file := filepath.Join(directory, fmt.Sprintf("%s-%d-%s.image", test.name, index, name))
 				if err := os.WriteFile(file, body, 0600); err != nil {
 					t.Fatal(err)
 				}
