@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"image"
 	_ "image/jpeg"
@@ -82,7 +83,7 @@ func TestLiveArtwork(t *testing.T) {
 					response.Body.Close()
 					t.Fatalf("image HTTP %d at %s: %s", response.StatusCode, rawURL, failure)
 				}
-				body, err := io.ReadAll(io.LimitReader(response.Body, 4*1024*1024))
+				body, config, format, err := readLiveArtwork(response.Body)
 				response.Body.Close()
 				if err != nil {
 					t.Fatal(err)
@@ -90,15 +91,6 @@ func TestLiveArtwork(t *testing.T) {
 				name := record.Metadata.Fields["apple_field"].GetStringValue()
 				file := filepath.Join(directory, test.name+"-"+name+".image")
 				if err := os.WriteFile(file, body, 0600); err != nil {
-					t.Fatal(err)
-				}
-				input, err := os.Open(file)
-				if err != nil {
-					t.Fatal(err)
-				}
-				config, format, err := image.DecodeConfig(input)
-				input.Close()
-				if err != nil {
 					t.Fatal(err)
 				}
 				if record.Kind == "poster" && config.Width*3 != config.Height*2 {
@@ -115,6 +107,15 @@ func TestLiveArtwork(t *testing.T) {
 			}
 		})
 	}
+}
+
+func readLiveArtwork(reader io.Reader) ([]byte, image.Config, string, error) {
+	body, err := io.ReadAll(io.LimitReader(reader, 4*1024*1024))
+	if err != nil {
+		return nil, image.Config{}, "", err
+	}
+	config, format, err := image.DecodeConfig(bytes.NewReader(body))
+	return body, config, format, err
 }
 
 func abs(value int) int {
