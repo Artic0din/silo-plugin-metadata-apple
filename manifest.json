@@ -1,0 +1,29 @@
+{
+ "plugin_id": "artic0din.apple-artwork",
+ "version": "0.1.0",
+ "checksum": "__CHECKSUM__",
+ "silo_api_version": "v1",
+ "presentation": {
+  "display_name": "Apple TV Artwork",
+  "summary": "Choose Apple TV artwork in Silo's image picker.",
+  "description_markdown": "Movie and series posters, backdrops, logos and exact-season posters from Apple's public catalogue. Textless classifications are inferred from Apple image fields. Requires image_picker_lookup_provider_ids support in Silo.",
+  "setup_markdown": "Save your English artwork country, test the connection and enable Apple TV Artwork in your movie, series and season provider priorities. Open Edit Metadata > Images on a TMDB-matched title to select artwork. No Apple account is required.",
+  "homepage_url": "https://github.com/Artic0din/silo-plugin-metadata-apple",
+  "source_url": "https://github.com/Artic0din/silo-plugin-metadata-apple",
+  "support_url": "https://github.com/Artic0din/silo-plugin-metadata-apple/issues",
+  "changelog_url": "https://github.com/Artic0din/silo-plugin-metadata-apple/releases",
+  "publisher_name": "Artic0din",
+  "publisher_url": "https://github.com/Artic0din",
+  "license_spdx": "AGPL-3.0-or-later"
+ },
+ "supported_platforms": [{"os":"linux","arch":"amd64"},{"os":"linux","arch":"arm64"},{"os":"darwin","arch":"arm64"}],
+ "capabilities": [
+  {"type":"metadata_provider.v1","id":"appleart","display_name":"Apple TV Artwork","metadata":{"default_priority":{"movie":50,"series":50,"season":50},"default_enabled":false,"image_picker_lookup_provider_ids":["tmdb"]}},
+  {"type":"image_resolver.v1","id":"appleart","display_name":"Apple TV Images","metadata":{"schemes":["appleart"],"priority":100}}
+ ],
+ "global_config_schema": [{
+  "key":"artwork","title":"Apple artwork region","required":false,
+  "json_schema":"{\"type\":\"object\",\"properties\":{\"english_country\":{\"type\":\"string\",\"default\":\"au\",\"pattern\":\"^[A-Za-z]{2}$\"}},\"additionalProperties\":false}",
+  "admin_form":{"fields":[{"key":"english_country","label":"English artwork country","description":"Country code with an English storefront locale, such as au, us or gb. Defaults to Australia.","control":"ADMIN_FORM_CONTROL_TEXT"}],"submit_label":"Save region"}
+ }]
+}
